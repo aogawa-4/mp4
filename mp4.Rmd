@@ -1,0 +1,52 @@
+---
+title: "mp4"
+author: "Aoi, Ester"
+date: "4/20/2018"
+output: html_document
+---
+
+```{r, include = FALSE, message = FALSE, warning = FALSE}
+
+library(tidyverse)
+library(sf)
+library(macleish)
+library(leaflet)
+library(rgdal)
+library(ggmap)
+library(RgoogleMaps)
+
+```
+
+
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
+# reading shapefile
+sugar_bush <- st_read("sugar_bush/SugarbushPoly20171013.shp") %>%
+   st_transform(4326)
+
+sugar_bush_inside <- macleish_layers[["boundary"]] %>%
+  st_intersection(sugar_bush)
+
+elevation <- st_read("contours250k/CONTOURS250K_ARC.shp")%>%
+   st_transform(4326)
+
+elevation_inside <- macleish_layers[["boundary"]] %>%
+  st_intersection(elevation)
+
+# Mapping the sugar bushes
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = elevation_inside,  weight = 1, color = "blue") %>%
+  addPolygons(data = sugar_bush_inside,  weight = 1, color ="red") %>%
+  addPolygons(data = macleish_layers[["trails"]], 
+              weight = 2, color = "yellow", fillColor = "transparent") %>%
+  addMarkers(lng = -72.679737, lat = 42.453654, label = "North Sugar Bush", labelOptions = labelOptions(noHide = T)) %>% addMarkers(lng = -72.680573, lat= 42.4486, label = "South Sugar Bush", labelOptions = labelOptions(noHide = T))
+
+
+```
+
+
+
+
+https://github.com/aogawa-4/mp4.git [^1]
+
+[^1]: Github link for our project
