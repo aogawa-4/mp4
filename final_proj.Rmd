@@ -1,0 +1,163 @@
+---
+title: "new_mp4"
+author: "Aoi, Ester"
+date: "4/30/2018"
+output: html_document
+---
+
+```{r}
+library(mdsr)
+library(RMySQL)
+db <- dbConnect_scidb(dbname = "imdb")
+```
+
+
+```{r}
+dbGetQuery(db, "SELECT * FROM info_type WHERE info = 'gross';")
+
+dbGetQuery(db, "
+SELECT * FROM info_type 
+WHERE info LIKE '%gross%';
+")
+```
+
+```{r}
+#gross 2015
+# add genre of movie
+gross_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2015;")
+
+gross_2015 <- gross_2015 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+sum_gross_2015 <- gross_2015 %>%
+  group_by(id,title) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))
+
+
+#JOIN kind_type k ON k.id = mi.movie_id, k.kind
+```
+
+
+```{r}
+#Oscar 2016 Best picture nominees
+oscar_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'The Big Short' OR title = 'Bridge of Spies' OR title = 'Brooklyn' OR title = 'Mad Max: Fury Road' OR title = 'The Revenant');")
+
+oscar_2016 <- oscar_2016 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+# does not work 
+sum_oscar_2016 <- oscar_2016 %>%
+  group_by(id,title) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))
+
+# year latest? that specific month gross ? 
+```
+
+
+```{r}
+#gross 2016
+# add genre of movie
+gross_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2016;")
+
+gross_2016 <- gross_2016 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+sum_gross_2016 <- gross_2016 %>%
+  group_by(id,title) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))
+
+```
+
+
+```{r}
+#Oscar 2017 Best picture nominees
+oscar_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'Arrival' OR title = 'Fences' OR title = 'Hacksaw Ridge' OR title = 'Hell or High Water' OR title = 'Hidden Figures' OR title = 'La La Land' OR  title = 'Lion' OR title = 'Manchester by the Sea' OR title = 'Moonlight');")
+
+oscar_2017 <- oscar_2017 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+sum_oscar_2017 <- oscar_2017 %>%
+  group_by(id,title) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))
+```
+
+
+```{r}
+#gross 2017
+# add genre of movie
+gross_2017<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2017;")
+
+gross_2017 <- gross_2017 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+sum_gross_2017 <- gross_2017 %>%
+  group_by(id,title) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))
+
+```
+
+```{r}
+#Oscar 2018 Best picture nominees
+oscar_2018 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'The Darkest Hour' OR title = 'Dunkirk' OR title = 'Get Out' );")
+
+#no "call me by your name", "lady bird", "phantom thread", "the post", "the shape of water", "three billboards outside ebbing , missouri"
+
+oscar_2018 <- oscar_2018 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+sum_oscar_2018 <- oscar_2018 %>%
+  group_by(title) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))
+```
+
+
+
+```{r}
+# all the films
+films <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 ;")
+```
