@@ -13,16 +13,6 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 
 ```{r}
-dbGetQuery(db, "SELECT * FROM info_type WHERE info = 'gross';")
-
-dbGetQuery(db, "
-SELECT * FROM info_type 
-WHERE info LIKE '%gross%';
-")
-```
-
-
-```{r}
 # all the films
 films <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
 FROM title t
@@ -32,9 +22,567 @@ WHERE mi.info_type_id = 107 ;")
 
 
 ```{r}
+#gross 2007
+gross_2007 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2007;")
+
+#gross data
+gross_2007 <- gross_2007 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2007 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2007;") 
+
+#budget data
+budget_2007 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2007;")
+
+budget_2007 <- budget_2007 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2007 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2007;")
+
+s1_2007 <- left_join(genre_2007, gross_2007, by = "id") 
+
+s2_2007 <- left_join(s1_2007, budget_2007, by = "id")
+
+sum_2007 <- left_join(s2_2007, rating_2007, by = "id")
+
+sum_2007 <- na.omit(sum_2007)
+
+sum_2007_2 <- sum_2007 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(5)
+
+# just 5 since they're 5 movies in oscar data
+
+
+
+sum_genre2007 <- sum_2007 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(17) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+
+```{r}
+#gross 2008
+gross_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2008;")
+
+#gross data
+gross_2008 <- gross_2008 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2008;") 
+
+#budget data
+budget_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2008;")
+
+budget_2008 <- budget_2008 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2008;")
+
+s1_2008 <- left_join(genre_2008, gross_2008, by = "id") 
+
+s2_2008 <- left_join(s1_2008, budget_2008, by = "id")
+
+sum_2008 <- left_join(s2_2008, rating_2008, by = "id")
+
+sum_2008 <- na.omit(sum_2008)
+
+sum_2008_2 <- sum_2008 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(5)
+
+# just 5 since they're 5 movies in oscar data
+
+sum_genre2008 <- sum_2008 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(20) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+```{r}
+#gross 2009
+gross_2009<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2009;")
+
+#gross data
+gross_2009 <- gross_2009 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2009;") 
+
+#budget data
+budget_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2009;")
+
+budget_2009 <- budget_2009 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2009;")
+
+s1_2009 <- left_join(genre_2009, gross_2009, by = "id") 
+
+s2_2009 <- left_join(s1_2009, budget_2009, by = "id")
+
+sum_2009 <- left_join(s2_2009, rating_2009, by = "id")
+
+sum_2009 <- na.omit(sum_2009)
+
+sum_2009_2 <- sum_2009 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(10)
+
+# just 10 since they're 10 movies in oscar data
+
+
+
+sum_genre2009 <- sum_2009 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(37) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+
+
+```
+
+
+```{r}
+#gross 2010
+gross_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2010;")
+
+#gross data
+gross_2010 <- gross_2010 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2010;") 
+
+#budget data
+budget_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2010;")
+
+budget_2010 <- budget_2010 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2010;")
+
+s1_2010 <- left_join(genre_2010, gross_2010, by = "id") 
+
+s2_2010 <- left_join(s1_2010, budget_2010, by = "id")
+
+sum_2010 <- left_join(s2_2010, rating_2010, by = "id")
+
+sum_2010 <- na.omit(sum_2010)
+
+sum_2010_2 <- sum_2010 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(9)
+
+# just 9 since they're 9 movies in oscar data
+
+sum_genre2010 <- sum_2010 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(40) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+```{r}
+#gross 2011
+gross_2011<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2011;")
+
+#gross data
+gross_2011 <- gross_2011 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2011;") 
+
+#budget data
+budget_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2011;")
+
+budget_2011 <- budget_2011 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2011;")
+
+s1_2011 <- left_join(genre_2011, gross_2011, by = "id") 
+
+s2_2011 <- left_join(s1_2011, budget_2011, by = "id")
+
+sum_2011 <- left_join(s2_2011, rating_2011, by = "id")
+
+sum_2011 <- na.omit(sum_2011)
+
+sum_2011_2 <- sum_2011 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(9)
+
+# just 9 since they're 9 movies in oscar data
+
+sum_genre2011 <- sum_2011 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(27) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+```{r}
+#gross 2012
+gross_2012<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2012;")
+
+#gross data
+gross_2012 <- gross_2012 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2012;") 
+
+#budget data
+budget_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2012;")
+
+budget_2012 <- budget_2012 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2012;")
+
+s1_2012 <- left_join(genre_2012, gross_2012, by = "id") 
+
+s2_2012 <- left_join(s1_2012, budget_2012, by = "id")
+
+sum_2012 <- left_join(s2_2012, rating_2012, by = "id")
+
+sum_2012 <- na.omit(sum_2012)
+
+sum_2012_2 <- sum_2012 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(9)
+
+# just 9 since they're 8 movies in oscar data
+
+
+
+sum_genre2012 <- sum_2012 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross))%>%
+  head(29) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+```{r}
+#gross 2013
+gross_2013<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2013;")
+
+#gross data
+gross_2013 <- gross_2013 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2013;") 
+
+#budget data
+budget_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2013;")
+
+budget_2013 <- budget_2013 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+ 
+rating_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2013;")
+
+s1_2013 <- left_join(genre_2013, gross_2013, by = "id") 
+
+s2_2013 <- left_join(s1_2013, budget_2013, by = "id")
+
+sum_2013 <- left_join(s2_2013, rating_2013, by = "id")
+
+sum_2013 <- na.omit(sum_2013)
+
+sum_2013_2 <- sum_2013 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(9)
+
+# just 9 since they're 8 movies in oscar data
+
+
+
+sum_genre2013 <- sum_2013 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(36) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+```{r}
+#gross 2014
+gross_2014<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND production_year = 2014;")
+
+#gross data
+gross_2014 <- gross_2014 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+#genre data
+genre_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND production_year = 2014;") 
+
+#budget data
+budget_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2014;")
+
+budget_2014 <- budget_2014 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+
+rating_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2014;")
+
+s1_2014 <- left_join(genre_2014, gross_2014, by = "id") 
+
+s2_2014 <- left_join(s1_2014, budget_2014, by = "id")
+
+sum_2014 <- left_join(s2_2014, rating_2014, by = "id")
+
+sum_2014 <- na.omit(sum_2014)
+
+sum_2014_2 <- sum_2014 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
+arrange(desc(sum_gross)) %>%
+  head(8)
+
+# just 8 since they're 8 movies in oscar data
+
+
+sum_genre2014 <- sum_2014 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(29) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+
+```
+
+
+
+```{r}
 #gross 2015
 # add genre of movie
-gross_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+gross_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
 JOIN movie_info mi ON mi.movie_id = t.id
 WHERE mi.info_type_id = 107 
@@ -47,93 +595,65 @@ gross_2015 <- gross_2015 %>%
   arrange(desc(gross))
 
 #genre data
-genre_2015 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+genre_2015 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info, production_year
 FROM title t
 JOIN movie_info mi ON mi.movie_id = t.id
 WHERE mi.info_type_id = 3 
 AND production_year = 2015;") 
 
-# no rating? 
+#budget data
+budget_2015 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2015;")
 
-# rating_2015 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS rating_info
-# FROM title t
-# JOIN movie_info mi ON mi.movie_id = t.id
-# WHERE mi.info_type_id = 101 
-# AND production_year = 2015;") 
+budget_2015 <- budget_2015 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
 
-sum_2015 <- left_join(genre_2015, gross_2015, by = "id") 
+rating_2015 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2015;")
+
+s1_2015 <- left_join(genre_2015, gross_2015, by = "id") 
+
+s2_2015 <- left_join(s1_2015, budget_2015, by = "id")
+
+sum_2015 <- left_join(s2_2015, rating_2015, by = "id")
 
 sum_2015 <- na.omit(sum_2015)
 
-sum_2015_2 <- sum_2015 %>% select(id, title.x, genre_info, gross) %>%
-group_by(id,title.x) %>%
+sum_2015_2 <- sum_2015 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
 summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
 arrange(desc(sum_gross)) %>%
   head(8)
 
 # just 8 since they're 8 movies in oscar data
 
-```
 
-
-```{r}
-#Oscar 2016 Best picture nominees
-oscar_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 107 
-AND (title = 'The Big Short' 
-OR title = 'Bridge of Spies' 
-OR title = 'Brooklyn' 
-OR title = 'Mad Max: Fury Road' 
-OR title = 'The Revenant' 
-OR title = 'The Martian' 
-OR title = 'Room' 
-OR title = 'Spotlight' );")
-
-oscar_2016 <- oscar_2016 %>%
-  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
-         gross = parse_number(gross_string)) %>%
-  arrange(desc(gross))
-oscar_2016 <- na.omit(oscar_2016)
-
-os_genre_2016 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 3 
-AND (title = 'The Big Short' 
-OR title = 'Bridge of Spies' 
-OR title = 'Brooklyn' 
-OR title = 'Mad Max: Fury Road' 
-OR title = 'The Revenant' 
-OR title = 'The Martian' 
-OR title = 'Room' 
-OR title = 'Spotlight');") 
-
-os_sum_2016 <- left_join(os_genre_2016, oscar_2016, by = "id") 
-
-os_sum_2016 <- na.omit(os_sum_2016)
-
-sum_oscar_2016 <- os_sum_2016 %>% select(id, title.x, genre_info, gross) %>%
-group_by(id,title.x) %>%
-summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
-arrange(desc(sum_gross))
-
+sum_genre2015 <- sum_2015 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(34) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
 
 ```
-
-
-```{r}
-final_2015 <- bind_rows(sum_2015_2, sum_oscar_2016)
-# add id to separate oscar or sum 
-```
-
 
 
 ```{r}
 #gross 2016
 # add genre of movie
-gross_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info 
+gross_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
 JOIN movie_info mi ON mi.movie_id = t.id
 WHERE mi.info_type_id = 107 
@@ -150,134 +670,96 @@ JOIN movie_info mi ON mi.movie_id = t.id
 WHERE mi.info_type_id = 3 
 AND production_year = 2016;") 
 
-sum_2016 <- left_join(genre_2016, gross_2016, by = "id") 
+budget_2016 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS budget_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 105 
+AND production_year = 2016;")
+
+budget_2016 <- budget_2016 %>%
+  mutate(budget_string = str_extract(budget_info, "^\\$[0-9,]+"),
+         budget = parse_number(budget_string)) %>%
+  arrange(desc(budget))
+
+rating_2016 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info, production_year
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101
+AND production_year = 2016;")
+
+s1_2016 <- left_join(genre_2016, gross_2016, by = "id") 
+
+s2_2016 <- left_join(s1_2016, budget_2016, by = "id")
+
+sum_2016 <- left_join(s2_2016, rating_2016, by = "id")
 
 sum_2016 <- na.omit(sum_2016)
 
-sum_2016_2 <- sum_2015 %>% select(id, title.x, genre_info, gross) %>%
-group_by(id,title.x) %>%
+sum_2016_2 <- sum_2016 %>% 
+  select(id, title.x, genre_info, gross, budget, production_year.x, rating_info) %>%
+group_by(id,title.x, production_year.x, rating_info,budget) %>%
 summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+  mutate(earning = sum_gross - budget) %>%
 arrange(desc(sum_gross)) %>%
   head(9)
 # just 9 since they're 9 movies in oscar data
 
-```
-
-
-```{r}
-#Oscar 2017 Best picture nominees
-oscar_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 107 
-AND (title = 'Arrival' 
-OR title = 'Fences' 
-OR title = 'Hacksaw Ridge' 
-OR title = 'Hell or High Water' 
-OR title = 'Hidden Figures' 
-OR title = 'La La Land' 
-OR  title = 'Lion' 
-OR title = 'Manchester by the Sea' 
-OR title = 'Moonlight');")
-
-oscar_2017 <- oscar_2017 %>%
-  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
-         gross = parse_number(gross_string)) %>%
-  arrange(desc(gross))
-
-os_genre_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 3 
-AND (title = 'Arrival' 
-OR title = 'Fences' 
-OR title = 'Hacksaw Ridge' 
-OR title = 'Hell or High Water' 
-OR title = 'Hidden Figures' 
-OR title = 'La La Land' 
-OR  title = 'Lion' 
-OR title = 'Manchester by the Sea' 
-OR title = 'Moonlight');")
-
-os_sum_2017 <- left_join(os_genre_2017, oscar_2017, by = "id") 
-
-os_sum_2017 <- na.omit(os_sum_2017)
-
-sum_oscar_2017 <- os_sum_2017 %>% select(id, title.x, genre_info, gross) %>%
-group_by(id,title.x) %>%
-summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
-arrange(desc(sum_gross)) %>%
-  head(4)
-
-# just 4 since they're 4 movies in oscar data 
-```
-
-
-```{r}
-#gross 2017
-# add genre of movie
-gross_2017<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 107 
-AND production_year = 2017;")
-
-gross_2017 <- gross_2017 %>%
-  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
-         gross = parse_number(gross_string)) %>%
-  arrange(desc(gross))
-
-genre_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 3 
-AND production_year = 2017;") 
-
-sum_2017 <- left_join(genre_2016, gross_2016, by = "id") 
-
-sum_2017 <- na.omit(sum_2016)
-
-sum_2017_2 <- sum_2017 %>% select(id, title.x, genre_info, gross) %>%
-group_by(id,title.x) %>%
-summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
-arrange(desc(sum_gross))
+sum_genre2016 <- sum_2016 %>%
+  select(id, title.x, genre_info, gross, production_year.x) %>%
+  group_by(id,title.x, genre_info, production_year.x) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  head(35) %>%
+  group_by(genre_info, production_year.x) %>%
+  summarise(genre = sum(n_distinct(title.x)))
 
 ```
 
 
 ```{r}
-#Oscar 2018 Best picture nominees
-oscar_2018 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 107 
-AND (title = 'The Darkest Hour' OR title = 'Dunkirk' OR title = 'Get Out' );")
+f1 <- bind_rows(sum_genre2007, sum_genre2008)
 
-oscar_2018 <- oscar_2018 %>%
-  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
-         gross = parse_number(gross_string)) %>%
-  arrange(desc(gross))
+f2 <- bind_rows(f1, sum_genre2009)
+f3 <- bind_rows(f2, sum_genre2010)
+f4 <- bind_rows(f3, sum_genre2011)
+f5 <- bind_rows(f4, sum_genre2012)
+f6 <- bind_rows(f5, sum_genre2013)
+f7 <- bind_rows(f6, sum_genre2014)
+f8 <- bind_rows(f7, sum_genre2015)
 
-os_genre_2018 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 3 
-AND (title = 'The Darkest Hour' OR title = 'Dunkirk' OR title = 'Get Out' );")
+all_film <- bind_rows(f8, sum_genre2016)
 
-#no "call me by your name", "lady bird", "phantom thread", "the post", "the shape of water", "three billboards outside ebbing , missouri"
+# add id to separate oscar or sum 
 
+ggplot(all_film, aes(x = production_year.x, y = genre, color = genre_info)) + 
+  geom_point() +
+  geom_line()
 
-os_sum_2018 <- left_join(os_genre_2018, oscar_2018, by = "id") 
-
-os_sum_2018 <- na.omit(os_sum_2018)
-
-sum_oscar_2018 <- os_sum_2018 %>% select(id, title.x, genre_info, gross) %>%
-group_by(id,title.x) %>%
-summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
-arrange(desc(sum_gross))
-
-final_2017 <- full_join()
 ```
+
+```{r}
+s1 <- bind_rows(sum_2007_2, sum_2008_2)
+
+s2 <- bind_rows(s1, sum_2009_2)
+s3 <- bind_rows(s2, sum_2010_2)
+s4 <- bind_rows(s3, sum_2011_2)
+s5 <- bind_rows(s4, sum_2012_2)
+s6 <- bind_rows(s5, sum_2013_2)
+s7 <- bind_rows(s6, sum_2014_2)
+s8 <- bind_rows(s7, sum_2015_2)
+
+sum_film <- bind_rows(s8, sum_2016_2)
+
+# rating and budget correlation
+ggplot(sum_film, aes(x = budget, y = rating_info, color = production_year.x)) +
+  geom_point() 
+
+# budget and gross
+ggplot(sum_film, aes(x = budget, y = sum_gross, color = production_year.x)) + geom_point()
+```
+
+
+
 
 
 
