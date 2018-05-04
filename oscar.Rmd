@@ -1,0 +1,771 @@
+---
+title: "oscar"
+author: "Aoi, Ester"
+date: "5/3/2018"
+output: html_document
+---
+
+```{r}
+library(mdsr)
+library(RMySQL)
+db <- dbConnect_scidb(dbname = "imdb")
+```
+
+```{r}
+# # all the films
+# films <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
+# FROM title t
+# JOIN movie_info mi ON mi.movie_id = t.id
+# WHERE mi.info_type_id = 107 ;")
+```
+
+
+```{r}
+#Oscar 2008 Best picture nominees
+oscar_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'No Country for Old Men' 
+OR title = 'Atonement' 
+OR title = 'Juno' 
+OR title = 'Michael Clayton' 
+OR title = 'There Will Be Blood');")
+
+oscar_2008 <- oscar_2008 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2008 <- na.omit(oscar_2008)
+
+os_genre_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'No Country for Old Men' 
+OR title = 'Atonement' 
+OR title = 'Juno' 
+OR title = 'Michael Clayton' 
+OR title = 'There Will Be Blood');")
+
+
+rt_oscar_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'No Country for Old Men' 
+OR title = 'Atonement' 
+OR title = 'Juno' 
+OR title = 'Michael Clayton' 
+OR title = 'There Will Be Blood');")
+
+os1_sum_2008 <- left_join(os_genre_2008, oscar_2008, by = "id") 
+
+os_sum_2008 <- left_join(os1_sum_2008, rt_oscar_2008, by = "id")
+
+os_sum_2008 <- na.omit(os_sum_2008)
+
+sum_oscar_2008 <- os_sum_2008 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross))
+
+sum_os_genre2008 <- os_sum_2008 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+
+```{r}
+#Oscar 2009 Best picture nominees
+oscar_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'Slumdog Millionaire' 
+OR title = 'The Curious Case of Benjamin Button' 
+OR title = 'Frost/Nixon' 
+OR title = 'Milk' 
+OR title = 'The Reader');")
+
+oscar_2009 <- oscar_2009 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2009 <- na.omit(oscar_2009)
+
+os_genre_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'Slumdog Millionaire' 
+OR title = 'The Curious Case of Benjamin Button' 
+OR title = 'Frost/Nixon' 
+OR title = 'Milk' 
+OR title = 'The Reader');")
+
+rt_oscar_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'Slumdog Millionaire' 
+OR title = 'The Curious Case of Benjamin Button' 
+OR title = 'Frost/Nixon' 
+OR title = 'Milk' 
+OR title = 'The Reader');")
+
+os1_sum_2009 <- left_join(os_genre_2009, oscar_2009, by = "id") 
+
+os_sum_2009 <- left_join(os1_sum_2009, rt_oscar_2009, by = "id")
+
+os_sum_2009 <- na.omit(os_sum_2009)
+
+sum_oscar_2009 <- os_sum_2009 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2009 <- os_sum_2009 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+
+```{r}
+#Oscar 2010 Best picture nominees
+oscar_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'The Hurt Locker' 
+OR title = 'Avatar' 
+OR title = 'The Blind Side' 
+OR title = 'District 9' 
+OR title = 'An Education' 
+OR title = 'Inglourious Basterds' 
+OR title = 'Precious' 
+OR title = 'A Serious Man' 
+OR title = 'Up'
+OR title = 'Up in the Air');")
+
+oscar_2010 <- oscar_2010 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2010 <- na.omit(oscar_2010)
+
+os_genre_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'The Hurt Locker' 
+OR title = 'Avatar' 
+OR title = 'The Blind Side' 
+OR title = 'District 9' 
+OR title = 'An Education' 
+OR title = 'Inglourious Basterds' 
+OR title = 'Precious' 
+OR title = 'A Serious Man' 
+OR title = 'Up'
+OR title = 'Up in the Air');")
+
+
+rt_oscar_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'The Hurt Locker' 
+OR title = 'Avatar' 
+OR title = 'The Blind Side' 
+OR title = 'District 9' 
+OR title = 'An Education' 
+OR title = 'Inglourious Basterds' 
+OR title = 'Precious' 
+OR title = 'A Serious Man' 
+OR title = 'Up'
+OR title = 'Up in the Air');")
+
+os1_sum_2010 <- left_join(os_genre_2010, oscar_2010, by = "id") 
+
+os_sum_2010 <- left_join(os1_sum_2010, rt_oscar_2010, by = "id")
+
+os_sum_2010 <- na.omit(os_sum_2010)
+
+sum_oscar_2010 <- os_sum_2010 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2010 <- os_sum_2010 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+
+```{r}
+#Oscar 2011 Best picture nominees
+oscar_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'The King''s Speech' 
+OR title = 'Black Swan' 
+OR title = 'The Fighter' 
+OR title = 'Inception' 
+OR title = '127 Hours' 
+OR title = 'The Social Network' 
+OR title = 'Toy Story 3' 
+OR title = 'True Grit' 
+OR title = 'Winter''s Bone')
+AND production_year = 2010;")
+
+oscar_2011 <- oscar_2011 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2011 <- na.omit(oscar_2011)
+
+os_genre_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'The King''s Speech' 
+OR title = 'Black Swan' 
+OR title = 'The Fighter' 
+OR title = 'Inception' 
+OR title = '127 Hours' 
+OR title = 'The Social Network' 
+OR title = 'Toy Story 3' 
+OR title = 'True Grit' 
+OR title = 'Winter''s Bone');")
+
+rt_oscar_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'The King''s Speech' 
+OR title = 'Black Swan' 
+OR title = 'The Fighter' 
+OR title = 'Inception' 
+OR title = '127 Hours' 
+OR title = 'The Social Network' 
+OR title = 'Toy Story 3' 
+OR title = 'True Grit' 
+OR title = 'Winter''s Bone');")
+
+os1_sum_2011 <- left_join(os_genre_2011, oscar_2011, by = "id") 
+
+os_sum_2011 <- left_join(os1_sum_2011, rt_oscar_2011, by = "id")
+
+os_sum_2011 <- na.omit(os_sum_2011)
+
+sum_oscar_2011 <- os_sum_2011 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2011 <- os_sum_2011 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+
+```{r}
+#Oscar 2012 Best picture nominees
+oscar_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'The Artist' 
+OR title = 'The Descendants' 
+OR title = 'Extremely Loud & Incredibly Close' 
+OR title = 'The Help' 
+OR title = 'Hugo' 
+OR title = 'Midnight in Paris' 
+OR title = 'Moneyball' 
+OR title = 'The Tree of Life' 
+OR title = 'War Horse');")
+
+oscar_2012 <- oscar_2012 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2012 <- na.omit(oscar_2012)
+
+os_genre_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'The Artist' 
+OR title = 'The Descendants' 
+OR title = 'Extremely Loud & Incredibly Close' 
+OR title = 'The Help' 
+OR title = 'Hugo' 
+OR title = 'Midnight in Paris' 
+OR title = 'Moneyball' 
+OR title = 'The Tree of Life' 
+OR title = 'War Horse');")
+
+
+rt_oscar_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'The Artist' 
+OR title = 'The Descendants' 
+OR title = 'Extremely Loud & Incredibly Close' 
+OR title = 'The Help' 
+OR title = 'Hugo' 
+OR title = 'Midnight in Paris' 
+OR title = 'Moneyball' 
+OR title = 'The Tree of Life' 
+OR title = 'War Horse');")
+
+os1_sum_2012 <- left_join(os_genre_2012, oscar_2012, by = "id") 
+
+os_sum_2012 <- left_join(os1_sum_2012, rt_oscar_2012, by = "id")
+
+os_sum_2012 <- na.omit(os_sum_2012)
+
+sum_oscar_2012 <- os_sum_2012 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2012 <- os_sum_2012 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+
+```
+
+
+
+```{r}
+#Oscar 2013 Best picture nominees
+oscar_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'Argo' 
+OR title = 'Amour' 
+OR title = 'Beasts of the Southern Wild' 
+OR title = 'Django Unchained' 
+OR title = 'Les Misérables' 
+OR title = 'Life of Pi' 
+OR title = 'Lincoln' 
+OR title = 'Silver Linings Playbook' 
+OR title = 'Zero Dark Thirty')
+AND production_year = 2012;")
+
+
+oscar_2013 <- oscar_2013 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2013 <- na.omit(oscar_2013)
+
+
+os_genre_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'Argo' 
+OR title = 'Amour' 
+OR title = 'Beasts of the Southern Wild' 
+OR title = 'Django Unchained' 
+OR title = 'Les Misérables' 
+OR title = 'Life of Pi' 
+OR title = 'Lincoln' 
+OR title = 'Silver Linings Playbook' 
+OR title = 'Zero Dark Thirty');")
+
+
+rt_oscar_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'Argo' 
+OR title = 'Amour' 
+OR title = 'Beasts of the Southern Wild' 
+OR title = 'Django Unchained' 
+OR title = 'Les Misérables' 
+OR title = 'Life of Pi' 
+OR title = 'Lincoln' 
+OR title = 'Silver Linings Playbook' 
+OR title = 'Zero Dark Thirty');")
+
+os1_sum_2013 <- left_join(os_genre_2013, oscar_2013, by = "id") 
+
+os_sum_2013 <- left_join(os1_sum_2013, rt_oscar_2013, by = "id")
+
+os_sum_2013 <- na.omit(os_sum_2013)
+
+sum_oscar_2013 <- os_sum_2013 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2013 <- os_sum_2013 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+
+```{r}
+#Oscar 2014 Best picture nominees
+oscar_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = '12 Years a Slave' 
+OR title = 'American Hustle' 
+OR title = 'Captain Phillips' 
+OR title = 'Dallas Buyers Club' 
+OR title = 'Gravity' 
+OR title = 'Her' 
+OR title = 'Nebraska' 
+OR title = 'Philomena' 
+OR title = 'The Wolf of Wall Street')
+AND production_year = 2013;")
+
+oscar_2014 <- oscar_2014 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2014 <- na.omit(oscar_2014)
+
+os_genre_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = '12 Years a Slave' 
+OR title = 'American Hustle' 
+OR title = 'Captain Phillips' 
+OR title = 'Dallas Buyers Club' 
+OR title = 'Gravity' 
+OR title = 'Her' 
+OR title = 'Nebraska' 
+OR title = 'Philomena' 
+OR title = 'The Wolf of Wall Street');")
+
+rt_oscar_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = '12 Years a Slave' 
+OR title = 'American Hustle' 
+OR title = 'Captain Phillips' 
+OR title = 'Dallas Buyers Club' 
+OR title = 'Gravity' 
+OR title = 'Her' 
+OR title = 'Nebraska' 
+OR title = 'Philomena' 
+OR title = 'The Wolf of Wall Street');")
+
+os1_sum_2014 <- left_join(os_genre_2014, oscar_2014, by = "id") 
+
+os_sum_2014 <- left_join(os1_sum_2014, rt_oscar_2014, by = "id")
+
+os_sum_2014 <- na.omit(os_sum_2014)
+
+sum_oscar_2014 <- os_sum_2014 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2014 <- os_sum_2014 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+
+```
+
+
+
+```{r}
+#Oscar 2015 Best picture nominees
+oscar_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'Birdman or (The Unexpected Virtue of Ignorance)' 
+OR title = 'American Sniper' 
+OR title = 'Boyhood' 
+OR title = 'The Grand Budapest Hotel' 
+OR title = 'The Imitation Game' 
+OR title = 'Selma' 
+OR title = 'The Theory of Everything' 
+OR title = 'Whiplash' );")
+
+oscar_2015 <- oscar_2015 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2015 <- na.omit(oscar_2015)
+
+os_genre_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'Birdman or (The Unexpected Virtue of Ignorance)' 
+OR title = 'American Sniper' 
+OR title = 'Boyhood' 
+OR title = 'The Grand Budapest Hotel' 
+OR title = 'The Imitation Game' 
+OR title = 'Selma' 
+OR title = 'The Theory of Everything' 
+OR title = 'Whiplash' );")
+
+
+rt_oscar_2015<- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'Birdman or (The Unexpected Virtue of Ignorance)' 
+OR title = 'American Sniper' 
+OR title = 'Boyhood' 
+OR title = 'The Grand Budapest Hotel' 
+OR title = 'The Imitation Game' 
+OR title = 'Selma' 
+OR title = 'The Theory of Everything' 
+OR title = 'Whiplash' );")
+
+os1_sum_2015 <- left_join(os_genre_2015, oscar_2015, by = "id") 
+
+os_sum_2015 <- left_join(os1_sum_2015, rt_oscar_2015, by = "id")
+
+os_sum_2015 <- na.omit(os_sum_2015)
+
+sum_oscar_2015 <- os_sum_2015 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2015 <- os_sum_2015 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+
+```
+
+
+
+```{r}
+#Oscar 2016 Best picture nominees
+oscar_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'The Big Short' 
+OR title = 'Bridge of Spies' 
+OR title = 'Brooklyn' 
+OR title = 'Mad Max: Fury Road' 
+OR title = 'The Revenant' 
+OR title = 'The Martian' 
+OR title = 'Room' 
+OR title = 'Spotlight' );")
+
+oscar_2016 <- oscar_2016 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+oscar_2016 <- na.omit(oscar_2016)
+
+os_genre_2016 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'The Big Short' 
+OR title = 'Bridge of Spies' 
+OR title = 'Brooklyn' 
+OR title = 'Mad Max: Fury Road' 
+OR title = 'The Revenant' 
+OR title = 'The Martian' 
+OR title = 'Room' 
+OR title = 'Spotlight');") 
+
+rt_oscar_2016 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'The Big Short' 
+OR title = 'Bridge of Spies' 
+OR title = 'Brooklyn' 
+OR title = 'Mad Max: Fury Road' 
+OR title = 'The Revenant' 
+OR title = 'The Martian' 
+OR title = 'Room' 
+OR title = 'Spotlight');") 
+
+os1_sum_2016 <- left_join(os_genre_2016, oscar_2016, by = "id") 
+
+os_sum_2016 <- left_join(os1_sum_2016, rt_oscar_2016, by = "id")
+
+os_sum_2016 <- na.omit(os_sum_2016)
+
+sum_oscar_2016 <- os_sum_2016 %>% select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross))
+
+sum_os_genre2016 <- os_sum_2016 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info, production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+
+
+```
+
+
+```{r}
+#Oscar 2017 Best picture nominees
+oscar_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 107 
+AND (title = 'Arrival' 
+OR title = 'Fences' 
+OR title = 'Hacksaw Ridge' 
+OR title = 'Hell or High Water' 
+OR title = 'Hidden Figures' 
+OR title = 'La La Land' 
+OR  title = 'Lion' 
+OR title = 'Manchester by the Sea' 
+OR title = 'Moonlight');")
+
+oscar_2017 <- oscar_2017 %>%
+  mutate(gross_string = str_extract(gross_info, "^\\$[0-9,]+"),
+         gross = parse_number(gross_string)) %>%
+  arrange(desc(gross))
+
+os_genre_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS genre_info
+FROM title t
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE mi.info_type_id = 3 
+AND (title = 'Arrival' 
+OR title = 'Fences' 
+OR title = 'Hacksaw Ridge' 
+OR title = 'Hell or High Water' 
+OR title = 'Hidden Figures' 
+OR title = 'La La Land' 
+OR  title = 'Lion' 
+OR title = 'Manchester by the Sea' 
+OR title = 'Moonlight');")
+
+
+
+os_rating_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mii.info AS rating_info
+FROM title t
+JOIN movie_info_idx mii ON mii.movie_id = t.id
+WHERE mii.info_type_id = 101 
+AND (title = 'Arrival' 
+OR title = 'Fences' 
+OR title = 'Hacksaw Ridge' 
+OR title = 'Hell or High Water' 
+OR title = 'Hidden Figures' 
+OR title = 'La La Land' 
+OR  title = 'Lion' 
+OR title = 'Manchester by the Sea' 
+OR title = 'Moonlight');")
+
+
+os1_sum_2017 <- left_join(os_genre_2017, oscar_2017, by = "id")
+
+os_sum_2017 <- left_join(os1_sum_2017, os_rating_2017, by = "id")
+
+os_sum_2017 <- na.omit(os_sum_2017)
+
+sum_oscar_2017 <- os_sum_2017 %>% 
+  select(id, title.x, genre_info, gross, production_year, rating_info) %>%
+group_by(id,title.x, production_year, rating_info) %>%
+summarise(sum_gross = max(gross), genre = paste(unique(genre_info), collapse=', ')) %>%
+arrange(desc(sum_gross)) 
+
+sum_os_genre2017 <- os_sum_2017 %>%
+  select(id, title.x, genre_info, gross, production_year) %>%
+  group_by(id,title.x, genre_info, production_year) %>%
+  summarise(sum_gross = max(gross)) %>%
+  arrange(desc(sum_gross)) %>%
+  group_by(genre_info,production_year) %>%
+  summarise(genre = sum(n_distinct(title.x)))
+```
+
+
+```{r}
+os1 <- bind_rows(sum_os_genre2008, sum_os_genre2009)
+os2 <- bind_rows(os1,sum_os_genre2010)
+os3 <- bind_rows(os2,sum_os_genre2011)
+os4 <- bind_rows(os3,sum_os_genre2012)
+os5 <- bind_rows(os4,sum_os_genre2013)
+os6 <- bind_rows(os5,sum_os_genre2014)
+os7 <- bind_rows(os6,sum_os_genre2015)
+os8 <- bind_rows(os7,sum_os_genre2016)
+all_oscar <- bind_rows(os8,sum_os_genre2017)
+
+ggplot(all_oscar, aes(x = production_year, y = genre, color = genre_info)) + 
+  geom_point() +
+  geom_line()
+```
+
+```{r}
+sum1 <- bind_rows(sum_oscar_2008, sum_oscar_2009)
+sum2 <- bind_rows(sum1, sum_oscar_2010)
+sum3 <- bind_rows(sum2, sum_oscar_2011)
+sum4 <- bind_rows(sum3, sum_oscar_2012)
+sum5 <- bind_rows(sum4, sum_oscar_2013)
+sum6 <- bind_rows(sum5, sum_oscar_2014)
+sum7 <- bind_rows(sum6, sum_oscar_2015)
+sum8 <- bind_rows(sum7, sum_oscar_2016)
+
+sum_oscar <- bind_rows(sum8, sum_oscar_2017)
+
+ggplot(sum_oscar, aes(x = sum_gross, y = rating_info, color = as.factor(production_year))) + 
+  geom_point() 
+```
+
