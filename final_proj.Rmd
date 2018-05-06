@@ -5,23 +5,14 @@ date: "4/30/2018"
 output: html_document
 ---
 
-```{r}
+```{r, include = FALSE, message = FALSE, warning = FALSE}
 library(mdsr)
 library(RMySQL)
 db <- dbConnect_scidb(dbname = "imdb")
 ```
 
 
-```{r}
-# all the films
-films <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info
-FROM title t
-JOIN movie_info mi ON mi.movie_id = t.id
-WHERE mi.info_type_id = 107 ;")
-```
-
-
-```{r}
+```{r, message = FALSE, warning = FALSE, echo = TRUE}
 #gross 2007
 gross_2007 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -92,7 +83,7 @@ sum_genre2007 <- sum_2007 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2008
 gross_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -160,7 +151,7 @@ sum_genre2008 <- sum_2008 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2009
 gross_2009<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -232,7 +223,7 @@ sum_genre2009 <- sum_2009 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2010
 gross_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -300,7 +291,7 @@ sum_genre2010 <- sum_2010 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2011
 gross_2011<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -368,7 +359,7 @@ sum_genre2011 <- sum_2011 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2012
 gross_2012<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -438,7 +429,7 @@ sum_genre2012 <- sum_2012 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2013
 gross_2013<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -508,7 +499,7 @@ sum_genre2013 <- sum_2013 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2014
 gross_2014<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -579,7 +570,7 @@ sum_genre2014 <- sum_2014 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2015
 # add genre of movie
 gross_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
@@ -650,7 +641,7 @@ sum_genre2015 <- sum_2015 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #gross 2016
 # add genre of movie
 gross_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
@@ -716,7 +707,7 @@ sum_genre2016 <- sum_2016 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 f1 <- bind_rows(sum_genre2007, sum_genre2008)
 
 f2 <- bind_rows(f1, sum_genre2009)
@@ -733,11 +724,13 @@ all_film <- bind_rows(f8, sum_genre2016)
 
 ggplot(all_film, aes(x = production_year, y = genre, color = genre_info)) + 
   geom_point() +
-  geom_line()
+  geom_line() + 
+  labs(x = "Production Year", y = "Total Number") +
+  scale_fill_discrete(name = "Genre")
 
 ```
 
-```{r}
+```{r,message = FALSE, warning = FALSE, echo= TRUE}
 s1 <- bind_rows(sum_2007_2, sum_2008_2)
 
 s2 <- bind_rows(s1, sum_2009_2)
@@ -750,20 +743,12 @@ s8 <- bind_rows(s7, sum_2015_2)
 
 sum_film <- bind_rows(s8, sum_2016_2)
 
-# rating and budget correlation
-ggplot(sum_film, aes(x = budget, y = rating_info, color = as.factor(production_year))) +
-  geom_point() 
-
-# budget and gross
-ggplot(sum_film, aes(x = budget, y = sum_gross, color = as.factor(production_year))) + geom_point()
 ```
 
 
-```{r}
-ggplot(sum_film, aes(x = sum_gross, y = rating_info, color = as.factor(production_year))) + geom_point()
-```
 
-```{r}
+
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2008 Best picture nominees
 oscar_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -825,7 +810,7 @@ sum_os_genre2008 <- os_sum_2008 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2009 Best picture nominees
 oscar_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -886,7 +871,7 @@ sum_os_genre2009 <- os_sum_2009 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2010 Best picture nominees
 oscar_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -963,7 +948,7 @@ sum_os_genre2010 <- os_sum_2010 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2011 Best picture nominees
 oscar_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1037,7 +1022,7 @@ sum_os_genre2011 <- os_sum_2011 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2012 Best picture nominees
 oscar_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1112,7 +1097,7 @@ sum_os_genre2012 <- os_sum_2012 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2013 Best picture nominees
 oscar_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1189,7 +1174,7 @@ sum_os_genre2013 <- os_sum_2013 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2014 Best picture nominees
 oscar_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1264,7 +1249,7 @@ sum_os_genre2014 <- os_sum_2014 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2015 Best picture nominees
 oscar_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1336,7 +1321,7 @@ sum_os_genre2015 <- os_sum_2015 %>%
 
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2016 Best picture nominees
 oscar_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1406,7 +1391,7 @@ sum_os_genre2016 <- os_sum_2016 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 #Oscar 2017 Best picture nominees
 oscar_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1480,7 +1465,7 @@ sum_os_genre2017 <- os_sum_2017 %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 os1 <- bind_rows(sum_os_genre2008, sum_os_genre2009)
 os2 <- bind_rows(os1,sum_os_genre2010)
 os3 <- bind_rows(os2,sum_os_genre2011)
@@ -1510,7 +1495,7 @@ ggplot(all_oscar, aes(x = production_year, y = genre, color = genre_info)) +
   geom_line()
 ```
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
 all_oscar$oscar <- "TRUE"
 all_film$oscar <- "FALSE"
 
@@ -1518,27 +1503,29 @@ data_all <- bind_rows(all_oscar, all_film)
 
 ggplot(data_all) + 
   geom_bar(aes(x = genre_info, y = genre, fill = oscar), stat = "identity", position = "stack") +
-  labs(y = "Total Number", x = "Genre")
+  labs(y = "Total Number", x = "Genre") +
+  scale_fill_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes"))
 ```
 
 
-```{r}
-sum_oscar$oscar <- "TRUE"
-sum_film$oscar <- "FALSE"
 
-data_sum <- bind_rows(sum_oscar, sum_film)
 
-ggplot(data_sum, aes(x = rating_info, fill = oscar))+ 
-  geom_bar( position = "stack") +
-  labs(y = "Total Number" ,x = "Rating") 
-  
+```{r, message = FALSE, warning = FALSE, echo= TRUE}
+data_sum
+# gross vs rating
+#cgange the rating scale 
+ggplot(data_sum, aes(x = rating_info, y = sum_gross, color = oscar)) + 
+  geom_point() +
+  labs(x = "Rating", y = "Total Gross") +
+  scale_fill_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes"))
 ```
 
-```{r}
 
-#change the genre 
-mod <- lm(rating_info ~ genre_info + gross + oscar, data_sum)
 
-plot(mod)
-```
+https://github.com/aogawa-4/mp4.git [^1]
+http://graphics.latimes.com/oscars-2016-voters/ [^2]
+http://www.vulture.com/2017/11/when-will-marvel-studios-win-an-oscar.html [^3]
 
+[^1]: Github link for our project
+[^2]: Source for article "Oscars 2016 voters"
+[^3]: Source for article "When Will Marvel Studios Win an Oscar?"
