@@ -5,6 +5,31 @@ date: "4/30/2018"
 output: html_document
 ---
 
+# The Oscars Paradox: A Look into the Issues of Modern Award Shows
+####	aka The Academy is Bullshit
+###	By Ester Zhao and Aoi Ogawa
+
+
+<br>
+![](https://i.kinja-img.com/gawker-media/image/upload/s--qyTJxifj--/c_scale,f_auto,fl_progressive,q_80,w_800/c5qdtec1p2bgajxtmhlz.jpg)
+<br>
+
+### THE PROBLEM:
+
+\n
+
+In 2015, #OscarsSoWhite trended on Twitter. This was a response to nominations for best lead actor and supporting actor - noticeably, all of the nominees were white. Public outrage was quickly stoked, and news articles written on the subject were abundant for the next couple months. Despite all this attention, the phenomenon repeated the next year, in 2016. People of color were not receiving nominations for roles that were very well rated. Movies that did extremely well, and had high ratings from critics, failed to be nominated or win awards for best film. Furthermore, despite public outrage due to the thinly veiled racism that the nominations seemed to imply, it does not seem that productive change is occuring. It seemed that the movies receiving nominations had no correlation with the most successful and popular movies of the year.
+The demographic of the voting body is the majority of the problem. In 2014, an article by the Los Angeles Times stated that the average Academy voter was a 63-year-old white man (http://graphics.latimes.com/oscars-2016-voters/ [^1]). Below is a graphic taken from DataDrivenJournalism.net displaying the demographics of the Academy.
+
+![] (http://datadrivenjournalism.net/uploads/Screen_shot_2012-03-07_at_9.31.32_AM.png) 
+
+\n (http://datadrivenjournalism.net/featured_projects/inside_the_academy_l.a._times_investigates_the_demographics_of_oscars_voter [^2])
+
+\n
+
+Thus, the tendency to nominate films that feature white males can be assumed to be due to unconscious bias. The Academy responded to complaints by promising to increase diversity over the next couple years. However, people began to question the integrity of the Academy. Questions began to circulate over whether awards shows such as these are the greatest indicator of success in the American film industry. 
+
+
 ```{r, include = FALSE, message = FALSE, warning = FALSE}
 library(mdsr)
 library(RMySQL)
@@ -12,7 +37,7 @@ db <- dbConnect_scidb(dbname = "imdb")
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo = TRUE}
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
 #gross 2007
 gross_2007 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -82,8 +107,7 @@ sum_genre2007 <- sum_2007 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2008
 gross_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -151,7 +175,7 @@ sum_genre2008 <- sum_2008 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2009
 gross_2009<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -223,7 +247,7 @@ sum_genre2009 <- sum_2009 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2010
 gross_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -291,7 +315,7 @@ sum_genre2010 <- sum_2010 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2011
 gross_2011<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -359,7 +383,7 @@ sum_genre2011 <- sum_2011 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2012
 gross_2012<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -429,7 +453,7 @@ sum_genre2012 <- sum_2012 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2013
 gross_2013<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -499,7 +523,7 @@ sum_genre2013 <- sum_2013 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2014
 gross_2014<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -570,7 +594,7 @@ sum_genre2014 <- sum_2014 %>%
 
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2015
 # add genre of movie
 gross_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
@@ -641,7 +665,7 @@ sum_genre2015 <- sum_2015 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #gross 2016
 # add genre of movie
 gross_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
@@ -707,7 +731,15 @@ sum_genre2016 <- sum_2016 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+### THE DISCREPANCY BETWEEN SUCCESS, AND “SUCCESS”.
+
+\n
+
+What is the true indicator of success in the American film industry? While some actors, such as Meryl Streep, are well known for winning many Oscars, it is movies such as those output by Marvel that garner the most box office success. It can be assumed that while some directors are aiming for record breaking ticket sales, others are trying to create films that can be analyzed for their artistry. So are movies that aim for award nominations truly as practically successful as others? Below is a graphic that displays the gross of Oscar nominated films, in contrast to the highest grossing films from 2008 to 2017. On the x-axis is the numerical review that each film received on imdb.
+
+
+
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 f1 <- bind_rows(sum_genre2007, sum_genre2008)
 
 f2 <- bind_rows(f1, sum_genre2009)
@@ -725,12 +757,18 @@ all_film <- bind_rows(f8, sum_genre2016)
 ggplot(all_film, aes(x = production_year, y = genre, color = genre_info)) + 
   geom_point() +
   geom_line() + 
-  labs(x = "Production Year", y = "Total Number") +
-  scale_fill_discrete(name = "Genre")
+  labs(title = "Top Gross Films: \n Genre Trends between 2007 to 2016", x = "Production Year", y = "Total Number") +
+  scale_color_discrete(name = "Genre") +
+  scale_y_continuous(breaks = c(0, 2, 4, 6, 8), labels= c(0, 2, 4, 6, 8))
 
 ```
 
-```{r,message = FALSE, warning = FALSE, echo= TRUE}
+<br>
+
+As can be seen, films that receive Oscar nominations and awards are not the most conventionally successful films of each year. The Oscar nominated films are not the highest grossing films of each year. Contrary to our hypothesis that nominated films are neither as successful nor well rated as the highest grossing movies of each year, they reviewed relatively well in comparison to high grossing movies. And yet, while it can be agreed that some films are not meant to be artistic and well made, there are high grossing and highly reviewed films in each year that many argue should have at least received a nomination. So what is the reasoning behind each nomination?
+
+
+```{r,message = FALSE, warning = FALSE, echo= FALSE}
 s1 <- bind_rows(sum_2007_2, sum_2008_2)
 
 s2 <- bind_rows(s1, sum_2009_2)
@@ -746,9 +784,7 @@ sum_film <- bind_rows(s8, sum_2016_2)
 ```
 
 
-
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2008 Best picture nominees
 oscar_2008 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -809,8 +845,7 @@ sum_os_genre2008 <- os_sum_2008 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2009 Best picture nominees
 oscar_2009 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -870,8 +905,7 @@ sum_os_genre2009 <- os_sum_2009 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2010 Best picture nominees
 oscar_2010 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -947,8 +981,7 @@ sum_os_genre2010 <- os_sum_2010 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2011 Best picture nominees
 oscar_2011 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1021,8 +1054,7 @@ sum_os_genre2011 <- os_sum_2011 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2012 Best picture nominees
 oscar_2012 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1097,7 +1129,7 @@ sum_os_genre2012 <- os_sum_2012 %>%
 
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2013 Best picture nominees
 oscar_2013 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1173,8 +1205,7 @@ sum_os_genre2013 <- os_sum_2013 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2014 Best picture nominees
 oscar_2014 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1248,8 +1279,7 @@ sum_os_genre2014 <- os_sum_2014 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2015 Best picture nominees
 oscar_2015<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1320,8 +1350,7 @@ sum_os_genre2015 <- os_sum_2015 %>%
 ```
 
 
-
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2016 Best picture nominees
 oscar_2016<- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1391,7 +1420,7 @@ sum_os_genre2016 <- os_sum_2016 %>%
 ```
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 #Oscar 2017 Best picture nominees
 oscar_2017 <- dbGetQuery(db, "SELECT t.id, t.title, mi.info AS gross_info, production_year
 FROM title t
@@ -1464,8 +1493,17 @@ sum_os_genre2017 <- os_sum_2017 %>%
   summarise(genre = sum(n_distinct(title.x)))
 ```
 
+<br>
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+### WHAT MAKES FOR AN OSCAR NOMINATION?
+
+\n
+
+The fact that the most financially successful movies, such as those within the Avengers franchise, tend to not be nominated for awards seems backwards in a country where capitalism is prized. This may be due to the type of movie that is being nominated for awards, versus the type of movie that is most popular amongst viewing audiences. Below are a few graphics that display the difference between the genre of films nominated for Oscar Best Picture between 2008 and 2017, and the genre of films with the highest gross for the same time frame. 
+
+<br>
+
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 os1 <- bind_rows(sum_os_genre2008, sum_os_genre2009)
 os2 <- bind_rows(os1,sum_os_genre2010)
 os3 <- bind_rows(os2,sum_os_genre2011)
@@ -1487,15 +1525,15 @@ sum8 <- bind_rows(sum7, sum_oscar_2016)
 
 sum_oscar <- bind_rows(sum8, sum_oscar_2017)
 
-ggplot(sum_oscar, aes(x = sum_gross, y = rating_info, color = as.factor(production_year))) + 
-  geom_point() 
-
 ggplot(all_oscar, aes(x = production_year, y = genre, color = genre_info)) + 
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Oscar Nominated Films: \n Genre Trends between 2007 to 2016", x = "Production Year", y = "Total Number") +
+  scale_color_discrete(name = "Genre") +
+  scale_y_continuous(breaks = c(0, 2, 4, 6, 8), labels= c(0, 2, 4, 6, 8))
 ```
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 all_oscar$oscar <- "TRUE"
 all_film$oscar <- "FALSE"
 
@@ -1503,29 +1541,54 @@ data_all <- bind_rows(all_oscar, all_film)
 
 ggplot(data_all) + 
   geom_bar(aes(x = genre_info, y = genre, fill = oscar), stat = "identity", position = "stack") +
-  labs(y = "Total Number", x = "Genre") +
-  scale_fill_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes"))
+  labs(title = "The Number of Each Genre", x = "Genre", y = "Total Number" ) +
+  scale_fill_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes")) 
 ```
 
 
 
 
-```{r, message = FALSE, warning = FALSE, echo= TRUE}
-data_sum
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
+
+sum_oscar$oscar <- "TRUE"
+sum_film$oscar <- "FALSE"
+
+data_sum <- bind_rows(sum_oscar, sum_film)
+
 # gross vs rating
-#cgange the rating scale 
 ggplot(data_sum, aes(x = rating_info, y = sum_gross, color = oscar)) + 
   geom_point() +
-  labs(x = "Rating", y = "Total Gross") +
-  scale_fill_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes"))
+  labs(title = "Rating vs Gross", x = "Rating", y = "Total Gross") +
+  scale_color_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes")) +
+  scale_x_discrete(breaks = c(4.5, 5.5, 6.5, 7.5, 8.5), labels = c("4.5", "5.5", "6.5", "7.5", "8.5")) +
+  scale_y_continuous(breaks = c(0, 500000000, 1000000000, 1500000000, 2000000000, 2500000000), labels = c("0", "500 M", "1 B", "1.5 B", "2 B", "2.5 B"))
 ```
 
+<br>
+
+It is evident from the third plot that the drama genre is a goldmine for nominations, followed by biographies. These films share a type of weight, and cannot be classified as light films meant for enjoyment. In contrast, it seems that American audiences prefer action movies - these were the highest grossing films for all the years in our data set. The prevalence of dramas over other movies in Oscar nominations would imply that in this point in time, some directors are choosing to create movies that they know the Academy voters will prefer, and that this no longer directly correlates with what audiences prefer. An article by Vulture commented on the fact that the highly successful movies within the Marvel Cinematic Universe have failed to achieve success at the Oscars -- not even in categories such as Best Sound Effect or Best Makeup and Hairstyles, that films such Guardians of the Galaxy should definitely have been major contenders for (http://www.vulture.com/2017/11/when-will-marvel-studios-win-an-oscar.html [^3]). This raises the question of whether the voters within the academy are not only biased based on the race and gender of actors, but by the additional variable of the voters own age. Films such as those in The Avengers franchise appeal greatly to a younger generation, and it is possible that the age of voters within the Academy will influence outcomes, steering the competition away from the loud, blockbuster films that Marvel puts out each year.
+
+<br>
+
+### CONCLUSIONS: 
+
+\n
+
+Some may argue that more “artistic” films deserve the nominations that they routinely receive. And it is possible that high grossing, highly reviewed films, such as those in the Marvel Cinematic Universe, don’t feel they need to work towards gaining awards that have no effect on the success of their franchise. However, the current setup of the Academy has had a discriminatory effect on the American film industry that is felt deeply by many. Movements such as #OscarsSoWhite have turned the conversation towards the demographic of voting bodies, and made the dialogue about discrimination in Hollywood much more open. We hope that this dialogue continues to allow the public to scrutinize institutions such as the Academy, and push for positive change when it comes to award shows. After all, we can all agree that the Best Picture must win.
+
+<br>
+
+![](https://media1.tenor.com/images/32457dbd5788a0b907d356ce16cbaba5/tenor.gif?itemid=4950041)
+
+<br>
+
+https://github.com/aogawa-4/mp4.git [^4]
 
 
-https://github.com/aogawa-4/mp4.git [^1]
-http://graphics.latimes.com/oscars-2016-voters/ [^2]
-http://www.vulture.com/2017/11/when-will-marvel-studios-win-an-oscar.html [^3]
 
-[^1]: Github link for our project
-[^2]: Source for article "Oscars 2016 voters"
+
+
+[^1]: Source for article "Oscars 2016 voters"
+[^2]: Source for article "Inside the Academy: L.A. Times investigates the demographics of Oscars' voters"
 [^3]: Source for article "When Will Marvel Studios Win an Oscar?"
+[^4]: Github link for our project
