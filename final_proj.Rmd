@@ -1,6 +1,6 @@
 ---
 title: "Mini Project 4"
-author: "Aoi, Ester"
+author: "Aoi Ogawa and Ester Zhao"
 date: "4/30/2018"
 output: html_document
 ---
