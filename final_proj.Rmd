@@ -1,13 +1,12 @@
 ---
-title: "new_mp4"
+title: "Mini Project 4"
 author: "Aoi, Ester"
 date: "4/30/2018"
 output: html_document
 ---
 
 # The Oscars Paradox: A Look into the Issues of Modern Award Shows
-####	aka The Academy is Bullshit
-###	By Ester Zhao and Aoi Ogawa
+######	aka The Academy is Bullshit
 
 
 <br>
@@ -19,11 +18,7 @@ output: html_document
 \n
 
 In 2015, #OscarsSoWhite trended on Twitter. This was a response to nominations for best lead actor and supporting actor - noticeably, all of the nominees were white. Public outrage was quickly stoked, and news articles written on the subject were abundant for the next couple months. Despite all this attention, the phenomenon repeated the next year, in 2016. People of color were not receiving nominations for roles that were very well rated. Movies that did extremely well, and had high ratings from critics, failed to be nominated or win awards for best film. Furthermore, despite public outrage due to the thinly veiled racism that the nominations seemed to imply, it does not seem that productive change is occuring. It seemed that the movies receiving nominations had no correlation with the most successful and popular movies of the year.
-The demographic of the voting body is the majority of the problem. In 2014, an article by the Los Angeles Times stated that the average Academy voter was a 63-year-old white man (http://graphics.latimes.com/oscars-2016-voters/ [^1]). Below is a graphic taken from DataDrivenJournalism.net displaying the demographics of the Academy.
-
-![] (http://datadrivenjournalism.net/uploads/Screen_shot_2012-03-07_at_9.31.32_AM.png) 
-
-\n (http://datadrivenjournalism.net/featured_projects/inside_the_academy_l.a._times_investigates_the_demographics_of_oscars_voter [^2])
+The demographic of the voting body is the majority of the problem. In 2014, an article by the Los Angeles Times stated that the average Academy voter was a 63-year-old white man [^1]. 
 
 \n
 
@@ -738,30 +733,23 @@ sum_genre2016 <- sum_2016 %>%
 What is the true indicator of success in the American film industry? While some actors, such as Meryl Streep, are well known for winning many Oscars, it is movies such as those output by Marvel that garner the most box office success. It can be assumed that while some directors are aiming for record breaking ticket sales, others are trying to create films that can be analyzed for their artistry. So are movies that aim for award nominations truly as practically successful as others? Below is a graphic that displays the gross of Oscar nominated films, in contrast to the highest grossing films from 2008 to 2017. On the x-axis is the numerical review that each film received on imdb.
 
 
-
 ```{r, message = FALSE, warning = FALSE, echo= FALSE}
-f1 <- bind_rows(sum_genre2007, sum_genre2008)
 
-f2 <- bind_rows(f1, sum_genre2009)
-f3 <- bind_rows(f2, sum_genre2010)
-f4 <- bind_rows(f3, sum_genre2011)
-f5 <- bind_rows(f4, sum_genre2012)
-f6 <- bind_rows(f5, sum_genre2013)
-f7 <- bind_rows(f6, sum_genre2014)
-f8 <- bind_rows(f7, sum_genre2015)
+sum_oscar$oscar <- "TRUE"
+sum_film$oscar <- "FALSE"
 
-all_film <- bind_rows(f8, sum_genre2016)
+data_sum <- bind_rows(sum_oscar, sum_film)
 
-# add id to separate oscar or sum 
-
-ggplot(all_film, aes(x = production_year, y = genre, color = genre_info)) + 
+# gross vs rating
+ggplot(data_sum, aes(x = rating_info, y = sum_gross, color = oscar)) + 
   geom_point() +
-  geom_line() + 
-  labs(title = "Top Gross Films: \n Genre Trends between 2007 to 2016", x = "Production Year", y = "Total Number") +
-  scale_color_discrete(name = "Genre") +
-  scale_y_continuous(breaks = c(0, 2, 4, 6, 8), labels= c(0, 2, 4, 6, 8))
-
+  labs(title = "Rating vs Gross", x = "Rating", y = "Total Gross") +
+  scale_color_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes")) +
+  scale_x_discrete(breaks = c(4.5, 5.5, 6.5, 7.5, 8.5), labels = c("4.5", "5.5", "6.5", "7.5", "8.5")) +
+  scale_y_continuous(breaks = c(0, 500000000, 1000000000, 1500000000, 2000000000, 2500000000), labels = c("0", "500 M", "1 B", "1.5 B", "2 B", "2.5 B"))
 ```
+
+
 
 <br>
 
@@ -1504,6 +1492,30 @@ The fact that the most financially successful movies, such as those within the A
 <br>
 
 ```{r, message = FALSE, warning = FALSE, echo= FALSE}
+f1 <- bind_rows(sum_genre2007, sum_genre2008)
+
+f2 <- bind_rows(f1, sum_genre2009)
+f3 <- bind_rows(f2, sum_genre2010)
+f4 <- bind_rows(f3, sum_genre2011)
+f5 <- bind_rows(f4, sum_genre2012)
+f6 <- bind_rows(f5, sum_genre2013)
+f7 <- bind_rows(f6, sum_genre2014)
+f8 <- bind_rows(f7, sum_genre2015)
+
+all_film <- bind_rows(f8, sum_genre2016)
+
+# add id to separate oscar or sum 
+
+ggplot(all_film, aes(x = production_year, y = genre, color = genre_info)) + 
+  geom_point() +
+  geom_line() + 
+  labs(title = "Top Gross Films: \n Genre Trends between 2007 to 2016", x = "Production Year", y = "Total Films") +
+  scale_color_discrete(name = "Genre") +
+  scale_y_continuous(breaks = c(0, 2, 4, 6, 8), labels= c(0, 2, 4, 6, 8))
+
+```
+
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
 os1 <- bind_rows(sum_os_genre2008, sum_os_genre2009)
 os2 <- bind_rows(os1,sum_os_genre2010)
 os3 <- bind_rows(os2,sum_os_genre2011)
@@ -1528,7 +1540,7 @@ sum_oscar <- bind_rows(sum8, sum_oscar_2017)
 ggplot(all_oscar, aes(x = production_year, y = genre, color = genre_info)) + 
   geom_point() +
   geom_line() +
-  labs(title = "Oscar Nominated Films: \n Genre Trends between 2007 to 2016", x = "Production Year", y = "Total Number") +
+  labs(title = "Oscar Nominated Films: \n Genre Trends between 2007 to 2016", x = "Production Year", y = "Total Films") +
   scale_color_discrete(name = "Genre") +
   scale_y_continuous(breaks = c(0, 2, 4, 6, 8), labels= c(0, 2, 4, 6, 8))
 ```
@@ -1541,32 +1553,15 @@ data_all <- bind_rows(all_oscar, all_film)
 
 ggplot(data_all) + 
   geom_bar(aes(x = genre_info, y = genre, fill = oscar), stat = "identity", position = "stack") +
-  labs(title = "The Number of Each Genre", x = "Genre", y = "Total Number" ) +
-  scale_fill_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes")) 
+  labs(title = "Amount of Films in Each Genre", x = "Genre", y = "Total Films" ) +
+  scale_fill_discrete(name = "Type of Film", breaks = c("FALSE", "TRUE"), labels = c("High Grossing Film", "Oscar Nominated Film")) 
 ```
 
 
-
-
-```{r, message = FALSE, warning = FALSE, echo= FALSE}
-
-sum_oscar$oscar <- "TRUE"
-sum_film$oscar <- "FALSE"
-
-data_sum <- bind_rows(sum_oscar, sum_film)
-
-# gross vs rating
-ggplot(data_sum, aes(x = rating_info, y = sum_gross, color = oscar)) + 
-  geom_point() +
-  labs(title = "Rating vs Gross", x = "Rating", y = "Total Gross") +
-  scale_color_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes")) +
-  scale_x_discrete(breaks = c(4.5, 5.5, 6.5, 7.5, 8.5), labels = c("4.5", "5.5", "6.5", "7.5", "8.5")) +
-  scale_y_continuous(breaks = c(0, 500000000, 1000000000, 1500000000, 2000000000, 2500000000), labels = c("0", "500 M", "1 B", "1.5 B", "2 B", "2.5 B"))
-```
 
 <br>
 
-It is evident from the third plot that the drama genre is a goldmine for nominations, followed by biographies. These films share a type of weight, and cannot be classified as light films meant for enjoyment. In contrast, it seems that American audiences prefer action movies - these were the highest grossing films for all the years in our data set. The prevalence of dramas over other movies in Oscar nominations would imply that in this point in time, some directors are choosing to create movies that they know the Academy voters will prefer, and that this no longer directly correlates with what audiences prefer. An article by Vulture commented on the fact that the highly successful movies within the Marvel Cinematic Universe have failed to achieve success at the Oscars -- not even in categories such as Best Sound Effect or Best Makeup and Hairstyles, that films such Guardians of the Galaxy should definitely have been major contenders for (http://www.vulture.com/2017/11/when-will-marvel-studios-win-an-oscar.html [^3]). This raises the question of whether the voters within the academy are not only biased based on the race and gender of actors, but by the additional variable of the voters own age. Films such as those in The Avengers franchise appeal greatly to a younger generation, and it is possible that the age of voters within the Academy will influence outcomes, steering the competition away from the loud, blockbuster films that Marvel puts out each year.
+It is evident from the third plot that the drama genre is a goldmine for nominations, followed by biographies. These films share a type of weight, and cannot be classified as light films meant for enjoyment. In contrast, it seems that American audiences prefer action movies - these were the highest grossing films for all the years in our data set. The prevalence of dramas over other movies in Oscar nominations would imply that in this point in time, some directors are choosing to create movies that they know the Academy voters will prefer, and that this no longer directly correlates with what audiences prefer. An article by Vulture commented on the fact that the highly successful movies within the Marvel Cinematic Universe have failed to achieve success at the Oscars -- not even in categories such as Best Sound Effect or Best Makeup and Hairstyles, that films such Guardians of the Galaxy should definitely have been major contenders for [^2]. This raises the question of whether the voters within the academy are not only biased based on the race and gender of actors, but by the additional variable of the voters own age. Films such as those in The Avengers franchise appeal greatly to a younger generation, and it is possible that the age of voters within the Academy will influence outcomes, steering the competition away from the loud, blockbuster films that Marvel puts out each year.
 
 <br>
 
@@ -1582,13 +1577,12 @@ Some may argue that more “artistic” films deserve the nominations that they 
 
 <br>
 
-https://github.com/aogawa-4/mp4.git [^4]
+Project GitHub Link [^3]
 
 
 
 
 
-[^1]: Source for article "Oscars 2016 voters"
-[^2]: Source for article "Inside the Academy: L.A. Times investigates the demographics of Oscars' voters"
-[^3]: Source for article "When Will Marvel Studios Win an Oscar?"
-[^4]: Github link for our project
+[^1]: Source for article "Oscars 2016 voters": http://graphics.latimes.com/oscars-2016-voters/ 
+[^2]: Source for article "When Will Marvel Studios Win an Oscar?": http://www.vulture.com/2017/11/when-will-marvel-studios-win-an-oscar.html 
+[^3]: Github link for our project: https://github.com/aogawa-4/mp4.git 
