@@ -733,29 +733,6 @@ sum_genre2016 <- sum_2016 %>%
 What is the true indicator of success in the American film industry? While some actors, such as Meryl Streep, are well known for winning many Oscars, it is movies such as those output by Marvel that garner the most box office success. It can be assumed that while some directors are aiming for record breaking ticket sales, others are trying to create films that can be analyzed for their artistry. So are movies that aim for award nominations truly as practically successful as others? Below is a graphic that displays the gross of Oscar nominated films, in contrast to the highest grossing films from 2008 to 2017. On the x-axis is the numerical review that each film received on imdb.
 
 
-```{r, message = FALSE, warning = FALSE, echo= FALSE}
-
-sum_oscar$oscar <- "TRUE"
-sum_film$oscar <- "FALSE"
-
-data_sum <- bind_rows(sum_oscar, sum_film)
-
-# gross vs rating
-ggplot(data_sum, aes(x = rating_info, y = sum_gross, color = oscar)) + 
-  geom_point() +
-  labs(title = "Rating vs Gross", x = "Rating", y = "Total Gross") +
-  scale_color_discrete(name = "Is It an Oscar Movie?", breaks = c("FALSE", "TRUE"), labels = c("No", "Yes")) +
-  scale_x_discrete(breaks = c(4.5, 5.5, 6.5, 7.5, 8.5), labels = c("4.5", "5.5", "6.5", "7.5", "8.5")) +
-  scale_y_continuous(breaks = c(0, 500000000, 1000000000, 1500000000, 2000000000, 2500000000), labels = c("0", "500 M", "1 B", "1.5 B", "2 B", "2.5 B"))
-```
-
-
-
-<br>
-
-As can be seen, films that receive Oscar nominations and awards are not the most conventionally successful films of each year. The Oscar nominated films are not the highest grossing films of each year. Contrary to our hypothesis that nominated films are neither as successful nor well rated as the highest grossing movies of each year, they reviewed relatively well in comparison to high grossing movies. And yet, while it can be agreed that some films are not meant to be artistic and well made, there are high grossing and highly reviewed films in each year that many argue should have at least received a nomination. So what is the reasoning behind each nomination?
-
-
 ```{r,message = FALSE, warning = FALSE, echo= FALSE}
 s1 <- bind_rows(sum_2007_2, sum_2008_2)
 
@@ -1481,6 +1458,50 @@ sum_os_genre2017 <- os_sum_2017 %>%
   summarise(genre = sum(n_distinct(title.x)))
 ```
 
+```{r, message = FALSE, warning = FALSE, echo= FALSE}
+os1 <- bind_rows(sum_os_genre2008, sum_os_genre2009)
+os2 <- bind_rows(os1,sum_os_genre2010)
+os3 <- bind_rows(os2,sum_os_genre2011)
+os4 <- bind_rows(os3,sum_os_genre2012)
+os5 <- bind_rows(os4,sum_os_genre2013)
+os6 <- bind_rows(os5,sum_os_genre2014)
+os7 <- bind_rows(os6,sum_os_genre2015)
+os8 <- bind_rows(os7,sum_os_genre2016)
+all_oscar <- bind_rows(os8,sum_os_genre2017)
+
+sum1 <- bind_rows(sum_oscar_2008, sum_oscar_2009)
+sum2 <- bind_rows(sum1, sum_oscar_2010)
+sum3 <- bind_rows(sum2, sum_oscar_2011)
+sum4 <- bind_rows(sum3, sum_oscar_2012)
+sum5 <- bind_rows(sum4, sum_oscar_2013)
+sum6 <- bind_rows(sum5, sum_oscar_2014)
+sum7 <- bind_rows(sum6, sum_oscar_2015)
+sum8 <- bind_rows(sum7, sum_oscar_2016)
+
+sum_oscar <- bind_rows(sum8, sum_oscar_2017)
+
+
+sum_oscar$oscar <- "TRUE"
+sum_film$oscar <- "FALSE"
+
+data_sum <- bind_rows(sum_oscar, sum_film)
+
+# gross vs rating
+ggplot(data_sum, aes(x = rating_info, y = sum_gross, color = oscar)) + 
+  geom_point() +
+  labs(title = "Rating vs Gross", x = "Rating", y = "Total Gross") +
+  scale_color_discrete(name = "Type of Film", breaks = c("FALSE", "TRUE"), labels = c("High Grossing Film", "Oscar Nominated Film")) +
+  scale_x_discrete(breaks = c(4.5, 5.5, 6.5, 7.5, 8.5), labels = c("4.5", "5.5", "6.5", "7.5", "8.5")) +
+  scale_y_continuous(breaks = c(0, 500000000, 1000000000, 1500000000, 2000000000, 2500000000), labels = c("0", "500 M", "1 B", "1.5 B", "2 B", "2.5 B"))
+```
+
+
+
+<br>
+
+As can be seen, films that receive Oscar nominations and awards are not the most conventionally successful films of each year. The Oscar nominated films are not the highest grossing films of each year. Contrary to our hypothesis that nominated films are neither as successful nor well rated as the highest grossing movies of each year, they reviewed relatively well in comparison to high grossing movies. And yet, while it can be agreed that some films are not meant to be artistic and well made, there are high grossing and highly reviewed films in each year that many argue should have at least received a nomination. So what is the reasoning behind each nomination?
+
+
 <br>
 
 ### WHAT MAKES FOR AN OSCAR NOMINATION?
@@ -1516,26 +1537,6 @@ ggplot(all_film, aes(x = production_year, y = genre, color = genre_info)) +
 ```
 
 ```{r, message = FALSE, warning = FALSE, echo= FALSE}
-os1 <- bind_rows(sum_os_genre2008, sum_os_genre2009)
-os2 <- bind_rows(os1,sum_os_genre2010)
-os3 <- bind_rows(os2,sum_os_genre2011)
-os4 <- bind_rows(os3,sum_os_genre2012)
-os5 <- bind_rows(os4,sum_os_genre2013)
-os6 <- bind_rows(os5,sum_os_genre2014)
-os7 <- bind_rows(os6,sum_os_genre2015)
-os8 <- bind_rows(os7,sum_os_genre2016)
-all_oscar <- bind_rows(os8,sum_os_genre2017)
-
-sum1 <- bind_rows(sum_oscar_2008, sum_oscar_2009)
-sum2 <- bind_rows(sum1, sum_oscar_2010)
-sum3 <- bind_rows(sum2, sum_oscar_2011)
-sum4 <- bind_rows(sum3, sum_oscar_2012)
-sum5 <- bind_rows(sum4, sum_oscar_2013)
-sum6 <- bind_rows(sum5, sum_oscar_2014)
-sum7 <- bind_rows(sum6, sum_oscar_2015)
-sum8 <- bind_rows(sum7, sum_oscar_2016)
-
-sum_oscar <- bind_rows(sum8, sum_oscar_2017)
 
 ggplot(all_oscar, aes(x = production_year, y = genre, color = genre_info)) + 
   geom_point() +
