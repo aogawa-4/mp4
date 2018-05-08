@@ -1546,19 +1546,32 @@ ggplot(all_oscar, aes(x = production_year, y = genre, color = genre_info)) +
   scale_y_continuous(breaks = c(0, 2, 4, 6, 8), labels= c(0, 2, 4, 6, 8))
 ```
 
-```{r, message = FALSE, warning = FALSE, echo= FALSE}
+```{r, message = FALSE, warning = FALSE, echo= FALSE, fig.width = 15, fig.height =10}
 all_oscar$oscar <- "TRUE"
 all_film$oscar <- "FALSE"
 
 data_all <- bind_rows(all_oscar, all_film)
 
-ggplot(data_all) + 
+ ggplot(data_all) + 
   geom_bar(aes(x = genre_info, y = genre, fill = oscar), stat = "identity", position = "stack") +
-  labs(title = "Amount of Films in Each Genre", x = "Genre", y = "Total Films" ) +
-  scale_fill_discrete(name = "Type of Film", breaks = c("FALSE", "TRUE"), labels = c("High Grossing Film", "Oscar Nominated Film")) 
+  labs(title = "Amount of Films in Each Genre", x = "Genre", y = "Total Films") +
+  scale_fill_discrete(name = "Type of Film", breaks = c("FALSE", "TRUE"), labels = c("High Grossing Film", "Oscar Nominated Film"))  + 
+  scale_x_discrete(breaks = c("Action", "Adventure", "Animation", "Biography", "Comedy", "Crime", "Drama", "Family", "Fantasy", "History", "Music", "Musical", "Mystery", "Romance", "Sci-Fi", "Sport", "Thriller", "War", "Western"), labels = c("ACT", "ADV", "ANM", "BIO", "COM", "CRM", "DRM", "FAM", "FAN", "HIS", "MUS", "MUC", "MYS", "ROM", "SCI", "SPT", "THR", "WAR", "WES")) +
+   theme(plot.title = element_text(size = 20), axis.title = element_text(size = 15))
+
 ```
 
+#### Codes for Each Abbreviation 
 
+ACT = Action,   CRM = Crime,   MUS = Music,   SPT = Sport
+
+ADV = Adventure,   DRM = Drama,   MUC = Musical,   THR = Thriller
+
+ANM = Animation,   FAM = Family,   MYS = Mystery,   WAR = War  
+
+BIO = Biology,   FAN = Fantasy,   ROM = Romance,   WES = Western
+
+COM = Comedy,   HIS = History,   SCI = Sci-Fi
 
 <br>
 
